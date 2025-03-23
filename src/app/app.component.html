@@ -1,0 +1,138 @@
+<!-- No assets are saved, show the call to action -->
+<div class="no-assets-wrapper" *ngIf="!assetsSaved">
+    <div class="no-assets-card">
+        <div class="no-assets-icon-container">
+            <fa-icon [icon]="faHandHoldingDollar"></fa-icon>
+        </div>
+        <h2 class="mt-20">No Assets</h2>
+        <h4>You currently don’t have any Assets...</h4>
+        <button class="add-assets-btn mt-50" data-bs-toggle="modal" data-bs-target="#addAssetsModal">
+            <p>Add Assets</p>
+        </button>
+    </div>
+</div>
+
+<!-- If assets are saved, show the table -->
+<div *ngIf="assetsSaved" class="assets-table-wrapper">
+    <div class="assets-table-cart">
+        <div class="assets-table">
+            <div class="header-table">
+                <div class="flex">
+                    <div class="icon-small-container">
+                        <fa-icon [icon]="faHandHoldingDollar"></fa-icon>
+                    </div>
+                    <div class="ml-20">
+                        <h2 id="addAssetsModalLabel">Assets</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="">
+                <div *ngFor="let asset of assets; let i = index" class="table-asset-row"
+                    [ngClass]="{ 'tr-bg': i % 2 === 1 }">
+
+                    <div class="td-type">{{ asset.type }}</div>
+                    <div class="td-value">${{ asset.value | number:'1.2-2' }}</div>
+                    <div class="td-action">
+                        <button class="button-trash" (click)="removeAssetLast(i)">
+                            <fa-icon [icon]="faTrashCan"></fa-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-asset-row total-row">
+                    <div class="td-type">TOTAL VALUE</div>
+                    <div class="td-value">${{ totalAssetValue | number:'1.2-2' }}</div>
+                    <div class="td-action"></div>
+                </div>
+            </div>
+        </div>
+        <div class="add-assets-btn-container">
+            <button class="add-assets-btn" data-bs-toggle="modal" data-bs-target="#addAssetsModal"
+                (click)="openModal()">
+                <p>Add Assets</p>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="addAssetsModal" tabindex="-1" aria-labelledby="addAssetsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="min-width: 1000px;">
+        <div class="modal-content content-modal">
+            <div class="header-modal">
+                <div class="flex">
+                    <div class="icon-small-container">
+                        <fa-icon [icon]="faHandHoldingDollar"></fa-icon>
+                    </div>
+                    <div class="ml-20" (click)="openModal()">
+                        <h2 id="addAssetsModalLabel">Add Assets</h2>
+                    </div>
+                </div>
+                <button type="button" class=" icon-xs-container" data-bs-dismiss="modal" aria-label="Close">
+                    <fa-icon [icon]="faXmark"></fa-icon>
+                </button>
+            </div>
+            <div class="">
+                <div class="modal-body">
+                    <div class="assets-container">
+                        <div class="asset-row border-b">
+                            <h4 style="width: 100%;">Type</h4>
+                            <h4 style="width: 100%;">Value</h4>
+                            <div style="width: 56px; height: 56px; aspect-ratio: 1/1;"></div>
+                        </div>
+                        <div class="modal-table-container">
+                            <div class="asset-row " *ngFor="let asset of draftAssets; let i = index"
+                                [ngClass]="{ 'row-container': i % 2 === 1 }">
+
+                                <div class="custom-select-wrapper">
+                                    <select [(ngModel)]="draftAssets[i].type"
+                                        [ngClass]="{ 'invalid-field': showValidationError && !asset.type }">
+                                        <option value="" disabled selected>— Select —</option>
+                                        <option value="Gift">Gift</option>
+                                        <option value="Savings">Savings</option>
+                                        <option value="RRSP">RRSP</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <fa-icon class="custom-arrow" [icon]="faChevronDown"></fa-icon>
+
+                                </div>
+
+                                <div class="value-input">
+                                    <div class="dollar-sign">
+                                        <span>$</span>
+                                    </div>
+                                    <input class="dollar-sign-input" type="text" [value]="inputValues[i]"
+                                        (input)="onValueInput($event, i)"
+                                        [ngClass]="{ 'invalid-field': showValidationError && !inputValues[i] }" />
+
+                                </div>
+
+                                <button [disabled]="draftAssets.length === 1" class="button-trash"
+                                    (click)="removeAsset(i)">
+                                    <fa-icon [icon]="faTrashCan"></fa-icon>
+                                </button>
+                            </div>
+
+                            <button class="add-another-assets-btn" (click)="addAsset()">
+                                <fa-icon [icon]="faCirclePlus" size="2x"></fa-icon>
+                                <h4 class="">Add Another Asset</h4>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body border-t">
+                    <div class="modal-action-container">
+                        <button class="close-btn" data-bs-toggle="modal" data-bs-target="#addAssetsModal">
+                            <p>Close</p>
+                        </button>
+                        <div *ngIf="showValidationError" class="validation-error" style="max-width: 400px;">
+                            <p>Please either fill out all the created inputs or delete them before saving.</p>
+                        </div>
+                        <button class="save-btn" (click)="saveAssets()">
+                            <p>Save</p>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
